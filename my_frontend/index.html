@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body onload="get_todos()">
+    <form id="todo_submit_form" onsubmit="todo_submit()">
+        <label for="todo_title">Todo Title</label>
+        <input type="text" name="todo_title" id="todo_title">
+        <input type="submit">
+    </form>
+
+    <div id="todos">
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        function get_todos() {
+            axios.get("http://localhost:3000/todos").then(
+                function (response) {
+                    const todos = response.data;
+                    if (todos.length == 0) {
+                        document.getElementById("todos").innerHTML = "<h1>No data received</h1>"
+                    }
+                    else {
+                        document.getElementById("todos").innerHTML = "";
+                        for (const iterator of todos) {
+                            for (const key in iterator) {
+                                const p_element = document.createElement("p");
+                                p_element.innerText = iterator[key];
+                                document.getElementById("todos").appendChild(p_element)
+                            }
+                        }
+                    }
+                }
+            )
+        }
+        function todo_submit() {
+            event.preventDefault();
+            const todo_title = document.getElementById("todo_title").value;
+            const data = {
+                "todo_title":todo_title
+            };
+            axios.post("http://localhost:3000/todos", data).then(
+                function (response) {
+                    get_todos();
+                }
+            ).catch(
+                function (error) {
+                    console.log(error);
+                }
+            )
+        }
+    </script>
+</body>
+
+</html>
